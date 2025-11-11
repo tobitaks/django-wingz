@@ -48,7 +48,7 @@ A full-stack ride-sharing management application with Django REST Framework back
 ## Project Structure
 
 ```
-djagno-assessment/
+django-wingz/
 ├── config/                 # Django project settings
 │   ├── settings.py        # Main settings with REST Framework & CORS config
 │   ├── urls.py            # Root URL configuration
@@ -83,17 +83,40 @@ djagno-assessment/
 └── requirements/          # Python dependencies
 ```
 
+## Common Development Commands
+
+```bash
+# Setup and initialization
+make init               # One-command setup (build, migrate, create superuser, generate data)
+make clean              # Remove containers and volumes
+make rebuild            # Clean rebuild
+
+# Container management
+make start              # Start containers
+make start-bg           # Start containers in background
+make stop               # Stop containers
+make logs               # View container logs
+
+# Database
+make migrate            # Run migrations
+make dbshell            # Open PostgreSQL shell
+
+# Testing
+make test               # Run all tests
+```
+
+
 ## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose installed
 
-### One-Command Setup
+### One-Command Setup (First Terminal)
 
 ```bash
 # Clone the repository
 git clone https://github.com/tobitaks/django-wingz
-cd djagno-assessment
+cd django-wingz
 
 # Initialize everything (build, migrate, create superuser, generate data)
 make init
@@ -107,24 +130,7 @@ This will:
 5. Prompt to create a superuser
 6. Generate sample data (users, rides, events)
 
-### Manual Setup
-
-```bash
-# Build and start containers
-make build
-make start-bg
-
-# Run migrations
-make migrate
-
-# Create superuser for admin access
-make createsuperuser
-
-# Generate sample data
-make generate-data
-```
-
-### Start Frontend Development Server
+### Start Frontend Development Server (second terminal tab)
 
 ```bash
 cd frontend
@@ -139,14 +145,8 @@ npm run dev
 - **Admin Panel**: http://localhost:8000/admin/
 - **API Rides Endpoint**: http://localhost:8000/api/rides/
 
-### Default Credentials
-
-After running `make generate-data`, you can login with:
-- **Email**: admin@wingz.com
-- **Password**: (set during `make createsuperuser`)
 
 ## API Documentation
-
 ### Authentication
 
 The API uses session-based authentication with CSRF protection.
@@ -157,7 +157,7 @@ POST /api/auth/login/
 Content-Type: application/json
 
 {
-  "username": "admin@wingz.com",
+  "username": "your-username",
   "password": "your-password"
 }
 ```
@@ -231,71 +231,6 @@ PATCH /api/rides/{id}/
 DELETE /api/rides/{id}/
 ```
 
-#### Users
-
-- `GET /api/users/` - List all users (no pagination)
-- `POST /api/users/` - Create user
-- `GET /api/users/{id}/` - Get user detail
-- `PUT/PATCH /api/users/{id}/` - Update user
-- `DELETE /api/users/{id}/` - Delete user
-
-#### Ride Events
-
-- `GET /api/ride-events/` - List ride events
-- `POST /api/ride-events/` - Create ride event
-- `GET /api/ride-events/{id}/` - Get event detail
-- `PUT/PATCH /api/ride-events/{id}/` - Update event
-- `DELETE /api/ride-events/{id}/` - Delete event
-
-## Frontend Features
-
-### Pages
-
-1. **Login Page** (`/login`)
-   - Session-based authentication
-   - Form validation and error handling
-   - Automatic redirect to rides list after login
-
-2. **Rides List** (`/rides`)
-   - View all rides in a card grid layout
-   - Filter by status and rider email
-   - Sort by pickup time (ascending/descending)
-   - Pagination controls
-   - Create new ride button
-   - Click card to view details
-
-3. **Ride Detail** (`/rides/:id`)
-   - View full ride information
-   - Rider and driver details
-   - Edit ride with pre-filled form
-   - Delete ride with confirmation
-
-### Components
-
-**Common Components:**
-- `Badge` - Status badges with color variants
-- `LoadingSpinner` - Loading indicators
-- `ErrorAlert` - Error messages with dismiss
-- `EmptyState` - Empty state placeholders
-- `Pagination` - Pagination controls
-
-**Ride Components:**
-- `RideCard` - Individual ride card display
-- `RideFilters` - Status and email filters
-- `RideFormModal` - Create/edit ride modal form
-
-**Layout Components:**
-- `AppHeader` - Application header with user info and logout
-- `MainLayout` - Main page layout wrapper
-
-### State Management
-
-The application uses Pinia stores for state management:
-
-- **authStore**: User authentication state
-- **rideStore**: Rides data, filters, pagination
-- **uiStore**: UI state (modals, notifications)
-
 ## Performance Optimization
 
 ### Backend Query Optimization
@@ -322,17 +257,21 @@ The Ride List API achieves the **2-3 query target** through:
 def get_queryset(self):
     cutoff_time = timezone.now() - timedelta(hours=24)
 
+    # prefetch_related() - Efficiently fetch today's ride events in a separate query
+    # This prevents N+1 queries when accessing ride events
     todays_events_prefetch = Prefetch(
         'ride_events',
         queryset=RideEvent.objects.filter(created_at__gte=cutoff_time),
         to_attr='todays_ride_events_prefetch'
     )
 
+    # select_related() - Performs SQL JOIN to fetch rider and driver in the same query
+    # prefetch_related() - Applies the custom prefetch for ride events
     queryset = Ride.objects.select_related(
-        'id_rider',
-        'id_driver'
+        'id_rider',   # JOIN with rider (ForeignKey)
+        'id_driver'   # JOIN with driver (ForeignKey)
     ).prefetch_related(
-        todays_events_prefetch
+        todays_events_prefetch  # Separate query for events
     )
 
     return queryset
@@ -395,88 +334,3 @@ make dbshell
 # Paste the SQL query above
 ```
 
-## Development Commands
-
-### Container Management
-```bash
-make build              # Build Docker containers
-make start              # Start containers (foreground)
-make start-bg           # Start containers (background)
-make stop               # Stop containers
-make restart            # Restart containers
-make logs               # View container logs
-make ps                 # Show running containers
-```
-
-### Database
-```bash
-make migrate            # Run migrations
-make migrations         # Create new migrations
-make dbshell            # Open PostgreSQL shell
-make showmigrations     # Show migration status
-```
-
-### Django
-```bash
-make shell              # Open Django shell
-make createsuperuser    # Create superuser
-make manage ARGS='...'  # Run any manage.py command
-make check              # Run Django system checks
-make collectstatic      # Collect static files
-```
-
-### Data Management
-```bash
-make generate-data                              # Generate sample data (default: 100 rides)
-make manage ARGS='generate_sample_data --rides=50'   # Generate 50 rides
-make manage ARGS='flush --no-input'                  # Clear all data
-```
-
-### Testing
-```bash
-make test               # Run all tests
-make test ARGS='rides'  # Run specific app tests
-```
-
-### Cleanup
-```bash
-make clean              # Remove containers and volumes
-make rebuild            # Clean rebuild (down, build, start, migrate)
-```
-
-### Frontend Development
-```bash
-cd frontend
-npm install             # Install dependencies
-npm run dev             # Start dev server
-npm run build           # Build for production
-npm run preview         # Preview production build
-```
-
-## Requirements Met
-
-### Backend
-✅ Django REST Framework with ViewSets
-✅ Models: User, Ride, RideEvent
-✅ Serializers with nested relations
-✅ Session-based authentication with CSRF protection
-✅ Filtering (status, rider email)
-✅ Sorting (pickup_time, GPS distance)
-✅ Pagination support
-✅ Performance optimization (2-3 queries)
-✅ `todays_ride_events` field (last 24 hours only)
-✅ Bonus SQL query for trips > 1 hour
-
-### Frontend
-✅ Vue.js 3 with Composition API
-✅ Complete CRUD operations for rides
-✅ Authentication with login/logout
-✅ Filtering and sorting UI
-✅ Pagination controls
-✅ Form validation
-✅ Responsive design
-✅ Error handling and loading states
-
----
-
-Built as part of the Wingz Django Engineer assessment.
