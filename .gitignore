@@ -1,0 +1,38 @@
+# Python
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Docker volumes and containers (not tracked)
+# Using Docker exclusively - no local virtual environments
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Database
+*.sql
+*.sqlite
+
+# Debug Toolbar
+.debug_toolbar/
