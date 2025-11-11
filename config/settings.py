@@ -158,6 +158,20 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',  # Vite default port
 ]
 
+# Allow credentials (cookies, authorization headers) for session auth
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF Settings - Trust frontend origins
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://localhost:5173',  # Vite default port
+]
+
+# Ensure CSRF cookie is set for API requests
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read the cookie
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 # Debug Toolbar
 INTERNAL_IPS = [
     '127.0.0.1',
