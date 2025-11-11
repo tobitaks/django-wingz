@@ -15,8 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
+from django.views.generic import TemplateView
+from django.views.static import serve
+import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +30,13 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls')),
+    ]
+
+# Serve Vue.js frontend in production
+if not settings.DEBUG:
+    # Serve index.html for all non-API routes (Vue Router support)
+    urlpatterns += [
+        re_path(r'^(?!api/|admin/|static/).*$',
+                TemplateView.as_view(template_name='index.html'),
+                name='frontend'),
     ]
