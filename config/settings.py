@@ -169,3 +169,15 @@ if DEBUG:
     import socket
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS += [ip[: ip.rfind(".")] + ".1" for ip in ips]
+
+# Additional Debug Toolbar configuration for Docker
+def show_toolbar(request):
+    """
+    Custom callback to show debug toolbar.
+    Always show in DEBUG mode (useful for Docker).
+    """
+    return DEBUG
+
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': show_toolbar,
+}
