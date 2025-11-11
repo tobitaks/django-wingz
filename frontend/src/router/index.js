@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 import RideListView from '../views/RideListView.vue'
+import RideDetailView from '../views/RideDetailView.vue'
 import LoginView from '../views/LoginView.vue'
 
 const routes = [
@@ -19,6 +20,12 @@ const routes = [
     path: '/rides',
     name: 'rides',
     component: RideListView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/rides/:id',
+    name: 'ride-detail',
+    component: RideDetailView,
     meta: { requiresAuth: true }
   },
   // More routes will be added in subsequent phases

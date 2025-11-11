@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import Badge from '../common/Badge.vue'
 import { MapPinIcon, ClockIcon, UserIcon } from '@heroicons/vue/24/outline'
 import dayjs from 'dayjs'
@@ -10,6 +11,12 @@ const props = defineProps({
     required: true
   }
 })
+
+const router = useRouter()
+
+const viewDetails = () => {
+  router.push(`/rides/${props.ride.id_ride}`)
+}
 
 const statusVariant = computed(() => {
   const variants = {
@@ -39,7 +46,10 @@ const todayEventsCount = computed(() => {
 </script>
 
 <template>
-  <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-6">
+  <div
+    @click="viewDetails"
+    class="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-6 cursor-pointer"
+  >
     <!-- Header -->
     <div class="flex items-start justify-between mb-4">
       <div>

@@ -1,15 +1,18 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRideStore } from '../stores/rideStore'
 import MainLayout from '../components/layout/MainLayout.vue'
 import RideCard from '../components/rides/RideCard.vue'
 import RideFilters from '../components/rides/RideFilters.vue'
+import RideFormModal from '../components/rides/RideFormModal.vue'
 import LoadingSpinner from '../components/common/LoadingSpinner.vue'
 import ErrorAlert from '../components/common/ErrorAlert.vue'
 import EmptyState from '../components/common/EmptyState.vue'
 import Pagination from '../components/common/Pagination.vue'
+import { PlusIcon } from '@heroicons/vue/24/outline'
 
 const rideStore = useRideStore()
+const showCreateModal = ref(false)
 
 onMounted(async () => {
   await loadRides()
@@ -34,17 +37,37 @@ const handlePageChange = (page) => {
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
+
+const handleCreateSubmit = async (payload) => {
+  try {
+    await rideStore.createRide(payload)
+    await loadRides() // Reload rides list
+    showCreateModal.value = false
+  } catch (err) {
+    // Error is already set in the store, modal will display it
+    console.error('Failed to create ride:', err)
+  }
+}
 </script>
 
 <template>
   <MainLayout>
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
-      <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Rides</h1>
-        <p class="text-sm text-gray-600 mt-1">
-          Manage and view all ride information
-        </p>
+      <div class="mb-6 flex items-start justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Rides</h1>
+          <p class="text-sm text-gray-600 mt-1">
+            Manage and view all ride information
+          </p>
+        </div>
+        <button
+          @click="showCreateModal = true"
+          class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+        >
+          <PlusIcon class="w-5 h-5" />
+          <span>Create Ride</span>
+        </button>
       </div>
 
       <!-- Filters -->
@@ -105,6 +128,13 @@ const handlePageChange = (page) => {
           <p class="text-sm text-gray-600 mt-3">Loading rides...</p>
         </div>
       </div>
+
+      <!-- Create Modal -->
+      <RideFormModal
+        :show="showCreateModal"
+        @close="showCreateModal = false"
+        @submit="handleCreateSubmit"
+      />
     </div>
   </MainLayout>
 </template>

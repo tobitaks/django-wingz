@@ -15,6 +15,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     ViewSet for User model.
     Only accessible by admin users.
+    Returns all users without pagination for dropdown lists.
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -22,6 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['email', 'first_name', 'last_name']
     ordering_fields = ['id_user', 'email', 'role']
+    pagination_class = None  # Disable pagination to return all users
 
 
 class RideViewSet(viewsets.ModelViewSet):
