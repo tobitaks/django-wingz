@@ -1,53 +1,86 @@
-# Wingz Ride Management API
+# Wingz Ride Management System
 
-A RESTful API built with Django REST Framework for managing ride-sharing information, with a strong focus on performance optimization and efficient database query patterns.
+A full-stack ride-sharing management application with Django REST Framework backend and Vue.js frontend, featuring performance-optimized APIs and a modern, responsive user interface.
 
 ## Features
 
+### Backend (Django REST Framework)
 - **Full CRUD API** for Rides, Users, and Ride Events
 - **Performance Optimized**: Achieves 2-3 database queries for ride list endpoint
 - **Advanced Filtering**: Filter by ride status and rider email
 - **Smart Sorting**: Sort by pickup time or GPS distance from any location
 - **Pagination**: Built-in pagination for all list endpoints
-- **Admin Authentication**: Role-based access control for admin users
-- **Docker Setup**: Complete containerized development environment
+- **Session-based Authentication**: Secure authentication with CSRF protection
+- **Role-based Access Control**: Admin-only API access
 - **Sample Data Generator**: Command to generate realistic test data
-- **Bonus SQL Query**: Complex reporting query for trip duration analysis
+
+### Frontend (Vue.js 3)
+- **Modern UI**: Built with Vue 3 Composition API and Tailwind CSS
+- **Ride Management**: Complete CRUD operations for rides
+- **Advanced Filtering**: Filter rides by status and rider email
+- **Sorting & Pagination**: Sort by pickup time with paginated results
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Real-time Validation**: Form validation with error feedback
+- **Session Management**: Secure login/logout with route guards
 
 ## Tech Stack
 
-- **Backend**: Python 3.10, Django 5.0, Django REST Framework 3.14
-- **Database**: PostgreSQL 15
-- **Containerization**: Docker, Docker Compose
-- **Development Tools**: Django Debug Toolbar, Makefile
+### Backend
+- Python 3.10
+- Django 5.0
+- Django REST Framework 3.14
+- PostgreSQL 15
+
+### Frontend
+- Vue.js 3 (Composition API)
+- Vite 7
+- Vue Router 4
+- Pinia (State Management)
+- Tailwind CSS 3
+- Axios
+- Heroicons
+
+### Development Tools
+- Docker & Docker Compose
+- Django Debug Toolbar
+- Makefile for common commands
 
 ## Project Structure
 
 ```
 djagno-assessment/
 ├── config/                 # Django project settings
-│   ├── settings.py        # Main settings with REST Framework config
+│   ├── settings.py        # Main settings with REST Framework & CORS config
 │   ├── urls.py            # Root URL configuration
 │   └── wsgi.py
-├── rides/                 # Main application
+├── rides/                 # Main Django application
 │   ├── models.py          # User, Ride, RideEvent models
 │   ├── serializers.py     # DRF serializers with optimization
 │   ├── views.py           # ViewSets with query optimization
+│   ├── auth_views.py      # Authentication endpoints
 │   ├── permissions.py     # IsAdminUser permission class
 │   ├── filters.py         # Custom filter for rides
-│   ├── admin.py           # Django admin configuration
 │   ├── urls.py            # API routes
 │   └── management/
 │       └── commands/
 │           └── generate_sample_data.py
+├── frontend/              # Vue.js application
+│   ├── src/
+│   │   ├── components/    # Vue components
+│   │   │   ├── common/    # Reusable components
+│   │   │   ├── layout/    # Layout components
+│   │   │   └── rides/     # Ride-specific components
+│   │   ├── views/         # Page components
+│   │   ├── stores/        # Pinia stores
+│   │   ├── services/      # API service layer
+│   │   ├── router/        # Vue Router configuration
+│   │   └── assets/        # Static assets
+│   ├── package.json
+│   └── vite.config.js
 ├── docker-compose.yml     # Docker services configuration
 ├── Dockerfile             # Django container definition
 ├── Makefile               # Common commands
-├── requirements/          # Python dependencies
-│   ├── base.txt          # Production dependencies
-│   └── development.txt   # Development dependencies
-├── PROJECT_PLAN.md        # Detailed project plan
-└── README.md              # This file
+└── requirements/          # Python dependencies
 ```
 
 ## Quick Start
@@ -55,13 +88,28 @@ djagno-assessment/
 ### Prerequisites
 - Docker and Docker Compose installed
 
-### Setup
+### One-Command Setup
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/tobitaks/django-wingz
 cd djagno-assessment
 
+# Initialize everything (build, migrate, create superuser, generate data)
+make init
+```
+
+This will:
+1. Create `.env` file from template
+2. Build Docker containers
+3. Start services in background
+4. Run database migrations
+5. Prompt to create a superuser
+6. Generate sample data (users, rides, events)
+
+### Manual Setup
+
+```bash
 # Build and start containers
 make build
 make start-bg
@@ -73,24 +121,64 @@ make migrate
 make createsuperuser
 
 # Generate sample data
-make manage ARGS='generate_sample_data'
+make generate-data
+```
+
+### Start Frontend Development Server
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ### Access the Application
 
+- **Frontend**: http://localhost:5173/
 - **API Root**: http://localhost:8000/api/
 - **Admin Panel**: http://localhost:8000/admin/
-- **Rides Endpoint**: http://localhost:8000/api/rides/
+- **API Rides Endpoint**: http://localhost:8000/api/rides/
+
+### Default Credentials
+
+After running `make generate-data`, you can login with:
+- **Email**: admin@wingz.com
+- **Password**: (set during `make createsuperuser`)
 
 ## API Documentation
 
 ### Authentication
 
-All API endpoints require authentication. Login via the admin panel or DRF browsable API. Only users with `role='admin'` (or Django superusers) can access the API.
+The API uses session-based authentication with CSRF protection.
+
+**Login:**
+```bash
+POST /api/auth/login/
+Content-Type: application/json
+
+{
+  "username": "admin@wingz.com",
+  "password": "your-password"
+}
+```
+
+**Logout:**
+```bash
+POST /api/auth/logout/
+```
+
+**Check Authentication:**
+```bash
+GET /api/auth/check/
+```
+
+All ride management endpoints require authentication. Only users with `role='admin'` (or Django superusers) can access the API.
 
 ### Endpoints
 
-#### List Rides
+#### Rides
+
+**List Rides**
 ```
 GET /api/rides/
 ```
@@ -110,17 +198,20 @@ GET /api/rides/?latitude=37.75&longitude=-122.45
 GET /api/rides/?status=dropoff&page=2
 ```
 
-#### Create Ride
+**Get Ride Detail**
 ```
-POST /api/rides/
+GET /api/rides/{id}/
 ```
 
-**Request Body:**
-```json
+**Create Ride**
+```
+POST /api/rides/
+Content-Type: application/json
+
 {
   "status": "en-route",
-  "id_rider_id": 1,
-  "id_driver_id": 11,
+  "id_rider_id": 3,
+  "id_driver_id": 14,
   "pickup_latitude": 37.7749,
   "pickup_longitude": -122.4194,
   "dropoff_latitude": 37.7849,
@@ -129,16 +220,85 @@ POST /api/rides/
 }
 ```
 
-#### Other Endpoints
+**Update Ride**
+```
+PUT /api/rides/{id}/
+PATCH /api/rides/{id}/
+```
 
-- `GET/POST /api/users/` - List/Create users
-- `GET/PUT/PATCH/DELETE /api/users/{id}/` - User detail
-- `GET/POST /api/ride-events/` - List/Create ride events
-- `GET/PUT/PATCH/DELETE /api/ride-events/{id}/` - Ride event detail
+**Delete Ride**
+```
+DELETE /api/rides/{id}/
+```
+
+#### Users
+
+- `GET /api/users/` - List all users (no pagination)
+- `POST /api/users/` - Create user
+- `GET /api/users/{id}/` - Get user detail
+- `PUT/PATCH /api/users/{id}/` - Update user
+- `DELETE /api/users/{id}/` - Delete user
+
+#### Ride Events
+
+- `GET /api/ride-events/` - List ride events
+- `POST /api/ride-events/` - Create ride event
+- `GET /api/ride-events/{id}/` - Get event detail
+- `PUT/PATCH /api/ride-events/{id}/` - Update event
+- `DELETE /api/ride-events/{id}/` - Delete event
+
+## Frontend Features
+
+### Pages
+
+1. **Login Page** (`/login`)
+   - Session-based authentication
+   - Form validation and error handling
+   - Automatic redirect to rides list after login
+
+2. **Rides List** (`/rides`)
+   - View all rides in a card grid layout
+   - Filter by status and rider email
+   - Sort by pickup time (ascending/descending)
+   - Pagination controls
+   - Create new ride button
+   - Click card to view details
+
+3. **Ride Detail** (`/rides/:id`)
+   - View full ride information
+   - Rider and driver details
+   - Edit ride with pre-filled form
+   - Delete ride with confirmation
+
+### Components
+
+**Common Components:**
+- `Badge` - Status badges with color variants
+- `LoadingSpinner` - Loading indicators
+- `ErrorAlert` - Error messages with dismiss
+- `EmptyState` - Empty state placeholders
+- `Pagination` - Pagination controls
+
+**Ride Components:**
+- `RideCard` - Individual ride card display
+- `RideFilters` - Status and email filters
+- `RideFormModal` - Create/edit ride modal form
+
+**Layout Components:**
+- `AppHeader` - Application header with user info and logout
+- `MainLayout` - Main page layout wrapper
+
+### State Management
+
+The application uses Pinia stores for state management:
+
+- **authStore**: User authentication state
+- **rideStore**: Rides data, filters, pagination
+- **uiStore**: UI state (modals, notifications)
 
 ## Performance Optimization
 
-### Query Optimization Strategy
+### Backend Query Optimization
 
 The Ride List API achieves the **2-3 query target** through:
 
@@ -235,50 +395,87 @@ make dbshell
 # Paste the SQL query above
 ```
 
-### Query Explanation
-
-1. **CTE (ride_durations)**: Uses conditional aggregation to find pickup and dropoff event times
-2. **Duration Calculation**: Converts time difference to hours using `EXTRACT(EPOCH ...)`
-3. **Filtering**: `WHERE ... > 1` filters for trips longer than 1 hour
-4. **Grouping**: Groups by month (YYYY-MM format) and driver name
-
 ## Development Commands
 
+### Container Management
 ```bash
-# Container Management
 make build              # Build Docker containers
+make start              # Start containers (foreground)
 make start-bg           # Start containers (background)
 make stop               # Stop containers
 make restart            # Restart containers
 make logs               # View container logs
+make ps                 # Show running containers
+```
 
-# Database
+### Database
+```bash
 make migrate            # Run migrations
+make migrations         # Create new migrations
 make dbshell            # Open PostgreSQL shell
+make showmigrations     # Show migration status
+```
 
-# Django
+### Django
+```bash
 make shell              # Open Django shell
 make createsuperuser    # Create superuser
 make manage ARGS='...'  # Run any manage.py command
+make check              # Run Django system checks
+make collectstatic      # Collect static files
+```
 
-# Data
-make manage ARGS='generate_sample_data'              # Generate 100 rides
+### Data Management
+```bash
+make generate-data                              # Generate sample data (default: 100 rides)
 make manage ARGS='generate_sample_data --rides=50'   # Generate 50 rides
 make manage ARGS='flush --no-input'                  # Clear all data
 ```
 
+### Testing
+```bash
+make test               # Run all tests
+make test ARGS='rides'  # Run specific app tests
+```
+
+### Cleanup
+```bash
+make clean              # Remove containers and volumes
+make rebuild            # Clean rebuild (down, build, start, migrate)
+```
+
+### Frontend Development
+```bash
+cd frontend
+npm install             # Install dependencies
+npm run dev             # Start dev server
+npm run build           # Build for production
+npm run preview         # Preview production build
+```
+
 ## Requirements Met
 
+### Backend
 ✅ Django REST Framework with ViewSets
 ✅ Models: User, Ride, RideEvent
 ✅ Serializers with nested relations
-✅ Admin-only authentication
+✅ Session-based authentication with CSRF protection
 ✅ Filtering (status, rider email)
 ✅ Sorting (pickup_time, GPS distance)
 ✅ Pagination support
 ✅ Performance optimization (2-3 queries)
 ✅ `todays_ride_events` field (last 24 hours only)
 ✅ Bonus SQL query for trips > 1 hour
+
+### Frontend
+✅ Vue.js 3 with Composition API
+✅ Complete CRUD operations for rides
+✅ Authentication with login/logout
+✅ Filtering and sorting UI
+✅ Pagination controls
+✅ Form validation
+✅ Responsive design
+✅ Error handling and loading states
 
 ---
 

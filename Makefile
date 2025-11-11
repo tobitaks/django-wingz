@@ -56,12 +56,15 @@ loaddata: ## Load fixture data. E.g. `make loaddata ARGS='rides/fixtures/sample_
 dumpdata: ## Dump data to fixture. E.g. `make dumpdata ARGS='rides --indent 2 > rides/fixtures/sample_data.json'`
 	@docker-compose run --rm web python manage.py dumpdata ${ARGS}
 
+generate-data: ## Generate sample data (users, rides, events)
+	@docker-compose run --rm web python manage.py generate_sample_data
+
 clean: ## Remove containers and volumes
 	@docker-compose down -v
 
 rebuild: clean build start-bg ## Clean rebuild of containers
 
-init: setup-env build start-bg migrate createsuperuser ## Quick setup (build, migrate, create superuser)
+init: setup-env build start-bg migrate createsuperuser generate-data ## Quick setup (build, migrate, create superuser, generate sample data)
 
 collectstatic: ## Collect static files
 	@docker-compose run --rm web python manage.py collectstatic --noinput
