@@ -4,16 +4,16 @@ A Django REST Framework backend for managing ride-sharing operations with perfor
 
 ## 🚀 Live Demo
 
-**Production URL**: https://django-wingz.fly.dev/
+**Production URL**: <a href="https://django-wingz.fly.dev/" target="_blank">https://django-wingz.fly.dev/</a>
 
 **Test Credentials:**
 - Username: `admin`
 - Password: `admin123`
 
 **Quick Links:**
-- [Frontend](https://django-wingz.fly.dev/)
-- [API Root](https://django-wingz.fly.dev/api/)
-- [Admin Panel](https://django-wingz.fly.dev/admin/)
+- <a href="https://django-wingz.fly.dev/" target="_blank">Frontend</a>
+- <a href="https://django-wingz.fly.dev/api/" target="_blank">API Root</a>
+- <a href="https://django-wingz.fly.dev/admin/" target="_blank">Admin Panel</a>
 
 ## Features
 
