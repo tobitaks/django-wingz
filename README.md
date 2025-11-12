@@ -1,6 +1,6 @@
 # Wingz Ride Management System
 
-A full-stack ride-sharing management application with Django REST Framework backend and Vue.js frontend, featuring performance-optimized APIs and a modern, responsive user interface.
+A Django REST Framework backend for managing ride-sharing operations with performance-optimized APIs, featuring advanced filtering, GPS-based sorting, and comprehensive CRUD operations.
 
 ## Features
 
@@ -14,15 +14,6 @@ A full-stack ride-sharing management application with Django REST Framework back
 - **Role-based Access Control**: Admin-only API access
 - **Sample Data Generator**: Command to generate realistic test data
 
-### Frontend (Vue.js 3)
-- **Modern UI**: Built with Vue 3 Composition API and Tailwind CSS
-- **Ride Management**: Complete CRUD operations for rides
-- **Advanced Filtering**: Filter rides by status and rider email
-- **Sorting & Pagination**: Sort by pickup time with paginated results
-- **Responsive Design**: Works seamlessly on desktop and mobile
-- **Real-time Validation**: Form validation with error feedback
-- **Session Management**: Secure login/logout with route guards
-
 ## Tech Stack
 
 ### Backend
@@ -30,15 +21,6 @@ A full-stack ride-sharing management application with Django REST Framework back
 - Django 5.0
 - Django REST Framework 3.14
 - PostgreSQL 15
-
-### Frontend
-- Vue.js 3 (Composition API)
-- Vite 7
-- Vue Router 4
-- Pinia (State Management)
-- Tailwind CSS 3
-- Axios
-- Heroicons
 
 ### Development Tools
 - Docker & Docker Compose
@@ -64,54 +46,18 @@ django-wingz/
 │   └── management/
 │       └── commands/
 │           └── generate_sample_data.py
-├── frontend/              # Vue.js application
-│   ├── src/
-│   │   ├── components/    # Vue components
-│   │   │   ├── common/    # Reusable components
-│   │   │   ├── layout/    # Layout components
-│   │   │   └── rides/     # Ride-specific components
-│   │   ├── views/         # Page components
-│   │   ├── stores/        # Pinia stores
-│   │   ├── services/      # API service layer
-│   │   ├── router/        # Vue Router configuration
-│   │   └── assets/        # Static assets
-│   ├── package.json
-│   └── vite.config.js
 ├── docker-compose.yml     # Docker services configuration
 ├── Dockerfile             # Django container definition
 ├── Makefile               # Common commands
 └── requirements/          # Python dependencies
 ```
 
-## Common Development Commands
-
-```bash
-# Setup and initialization
-make init               # One-command setup (build, migrate, create superuser, generate data)
-make clean              # Remove containers and volumes
-make rebuild            # Clean rebuild
-
-# Container management
-make start              # Start containers
-make start-bg           # Start containers in background
-make stop               # Stop containers
-make logs               # View container logs
-
-# Database
-make migrate            # Run migrations
-make dbshell            # Open PostgreSQL shell
-
-# Testing
-make test               # Run all tests
-```
-
-
 ## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose installed
 
-### One-Command Setup (First Terminal)
+### One-Command Setup
 
 ```bash
 # Clone the repository
@@ -130,23 +76,36 @@ This will:
 5. Prompt to create a superuser
 6. Generate sample data (users, rides, events)
 
-### Start Frontend Development Server (second terminal tab)
+### Access the Backend
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Access the Application
-
-- **Frontend**: http://localhost:5173/
 - **API Root**: http://localhost:8000/api/
 - **Admin Panel**: http://localhost:8000/admin/
 - **API Rides Endpoint**: http://localhost:8000/api/rides/
 
+### Running Tests
+
+After setup, you can run the comprehensive test suite:
+
+```bash
+# Run all 30 tests
+make test
+
+# Run specific test class
+make test ARGS="rides.tests.RideAPITest"
+
+# Run specific test method
+make test ARGS="rides.tests.RideAPITest.test_create_ride"
+
+# Run with verbose output
+make test ARGS="-v 2"
+```
+
+Expected output: `Ran 30 tests in X.XXXs - OK`
+
+See the [Testing](#testing) section below for detailed test coverage information.
 
 ## API Documentation
+
 ### Authentication
 
 The API uses session-based authentication with CSRF protection.
@@ -334,3 +293,134 @@ make dbshell
 # Paste the SQL query above
 ```
 
+## Testing
+
+The project includes comprehensive unit tests covering Ride models, serializers, API endpoints, filtering, sorting, authentication, and performance optimization.
+
+### Test Coverage
+
+**30 test cases covering:**
+- **Ride Model Tests**: Ride creation, validation, relationships, and cascade deletion
+- **RideEvent Model Tests**: Event creation, auto timestamps, and relationships
+- **Ride Serializer Tests**: Field validation and nested relationships (rider/driver)
+- **API Tests**: Full CRUD operations (Create, Read, Update, Delete)
+- **Authentication Tests**: Login, logout, and session management
+- **Filtering Tests**: Status and rider email filtering
+- **Sorting Tests**: Pickup time and GPS distance sorting
+- **Performance Tests**: Query optimization (2-3 queries) and event filtering
+
+### Running Tests
+
+```bash
+# Run all tests
+make test
+
+# Run specific test class
+make test ARGS="rides.tests.RideAPITest"
+
+# Run specific test method
+make test ARGS="rides.tests.RideAPITest.test_create_ride"
+
+# Run with verbose output
+make test ARGS="-v 2"
+```
+
+### Test Results
+
+All 30 tests pass successfully:
+- ✅ 5 Ride model tests
+- ✅ 4 RideEvent model tests
+- ✅ 2 Ride serializer tests
+- ✅ 4 Authentication tests
+- ✅ 7 Ride API CRUD tests
+- ✅ 6 Filtering and sorting tests
+- ✅ 2 Performance optimization tests
+
+## Common Development Commands
+
+```bash
+# Setup and initialization
+make init               # One-command setup (build, migrate, create superuser, generate data)
+make clean              # Remove containers and volumes
+make rebuild            # Clean rebuild
+
+# Container management
+make start              # Start containers
+make start-bg           # Start containers in background
+make stop               # Stop containers
+make logs               # View container logs
+
+# Database
+make migrate            # Run migrations
+make dbshell            # Open PostgreSQL shell
+
+# Testing
+make test               # Run all tests
+```
+
+---
+
+## Bonus: Vue.js Frontend
+
+A modern, responsive frontend interface built with Vue.js 3 has been included as a bonus feature for this project.
+
+### Frontend Features
+- **Modern UI**: Built with Vue 3 Composition API and Tailwind CSS
+- **Ride Management**: View and interact with ride data
+- **Advanced Filtering**: Filter rides by status and rider email
+- **Sorting & Pagination**: Sort by pickup time with paginated results
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Real-time Validation**: Form validation with error feedback
+- **Session Management**: Secure login/logout with route guards
+
+### Frontend Tech Stack
+- Vue.js 3 (Composition API)
+- Vite 7
+- Vue Router 4
+- Pinia (State Management)
+- Tailwind CSS 3
+- Axios
+- Heroicons
+
+### Frontend Project Structure
+
+```
+frontend/              # Vue.js application
+├── src/
+│   ├── components/    # Vue components
+│   │   ├── common/    # Reusable components
+│   │   ├── layout/    # Layout components
+│   │   └── rides/     # Ride-specific components
+│   ├── views/         # Page components
+│   ├── stores/        # Pinia stores
+│   ├── services/      # API service layer
+│   ├── router/        # Vue Router configuration
+│   └── assets/        # Static assets
+├── package.json
+└── vite.config.js
+```
+
+### Frontend Setup
+
+```bash
+# In a second terminal tab, start the frontend development server
+cd frontend
+npm install
+npm run dev
+```
+
+### Access the Frontend
+
+- **Frontend**: http://localhost:5173/
+
+### Production Deployment
+
+The application is deployed on Fly.io with integrated frontend and backend:
+
+- **Production URL**: https://django-wingz.fly.dev/
+
+The production build includes:
+- Multi-stage Docker build (Vue.js build + Django)
+- WhiteNoise for static file serving
+- PostgreSQL database
+- Production-ready security settings
