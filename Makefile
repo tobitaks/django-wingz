@@ -45,7 +45,7 @@ dbshell: ## Get a PostgreSQL shell
 	@docker-compose exec db psql -U postgres wingz_rides
 
 test: ## Run Django tests
-	@docker-compose run --rm web python manage.py test ${ARGS}
+	@docker-compose run --rm web python manage.py test --settings=config.settings_test ${ARGS}
 
 createsuperuser: ## Create a Django superuser
 	@docker-compose run --rm web python manage.py createsuperuser
