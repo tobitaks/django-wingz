@@ -11,9 +11,9 @@ A Django REST Framework backend for managing ride-sharing operations with perfor
 - Password: `admin123`
 
 **Quick Links:**
+- <a href="https://django-wingz.fly.dev/admin/" target="_blank">Admin Panel</a>
 - <a href="https://django-wingz.fly.dev/" target="_blank">Frontend</a>
 - <a href="https://django-wingz.fly.dev/api/" target="_blank">API Root</a>
-- <a href="https://django-wingz.fly.dev/admin/" target="_blank">Admin Panel</a>
 
 ## Features
 
@@ -92,8 +92,8 @@ This will:
 
 ### Access the Backend
 
-- **API Root**: http://localhost:8000/api/
 - **Admin Panel**: http://localhost:8000/admin/
+- **API Root**: http://localhost:8000/api/
 - **API Rides Endpoint**: http://localhost:8000/api/rides/
 
 #### Using the Django Admin Panel
