@@ -339,23 +339,20 @@ All 30 tests pass successfully:
 ## Common Development Commands
 
 ```bash
-# Setup and initialization
-make init               # One-command setup (build, migrate, create superuser, generate data)
-make clean              # Remove containers and volumes
-make rebuild            # Clean rebuild
+# Setup
+make init               # One-command setup (build, migrate, create superuser, generate data, start server)
+make help               # Show all available commands
 
 # Container management
-make start              # Start containers
-make start-bg           # Start containers in background
+make start              # Start containers and show logs
 make stop               # Stop containers
-make logs               # View container logs
-
-# Database
-make migrate            # Run migrations
-make dbshell            # Open PostgreSQL shell
+make clean              # Remove containers and volumes
 
 # Testing
 make test               # Run all tests
+
+# Database
+make dbshell            # Open PostgreSQL shell (for running SQL queries)
 ```
 
 ---
