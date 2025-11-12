@@ -7,8 +7,11 @@ import Badge from '../components/common/Badge.vue'
 import LoadingSpinner from '../components/common/LoadingSpinner.vue'
 import ErrorAlert from '../components/common/ErrorAlert.vue'
 import RideFormModal from '../components/rides/RideFormModal.vue'
-import { MapPinIcon, ClockIcon, UserIcon, TrashIcon, PencilIcon } from '@heroicons/vue/24/outline'
+import { MapPinIcon, ClockIcon, UserIcon, TrashIcon, PencilIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+dayjs.extend(relativeTime)
 
 const route = useRoute()
 const router = useRouter()
@@ -73,6 +76,10 @@ const handleDelete = async () => {
 
 const formatDateTime = (datetime) => {
   return dayjs(datetime).format('MMM D, YYYY h:mm A')
+}
+
+const formatRelativeTime = (datetime) => {
+  return dayjs(datetime).fromNow()
 }
 
 const handleEdit = () => {
@@ -228,6 +235,53 @@ const handleEditSubmit = async (payload) => {
                 {{ ride.dropoff_latitude.toFixed(6) }}, {{ ride.dropoff_longitude.toFixed(6) }}
               </p>
             </div>
+          </div>
+        </div>
+
+        <!-- Ride Events -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
+            <ClipboardDocumentListIcon class="w-5 h-5" />
+            Ride Events
+            <span class="text-sm font-normal text-gray-500 ml-2">
+              ({{ ride.ride_events?.length || 0 }} events)
+            </span>
+          </h2>
+
+          <div v-if="ride.ride_events && ride.ride_events.length > 0" class="space-y-4">
+            <!-- Timeline -->
+            <div class="relative">
+              <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+
+              <div
+                v-for="(event, index) in ride.ride_events"
+                :key="event.id_ride_event"
+                class="relative pl-10 pb-6 last:pb-0"
+              >
+                <!-- Timeline dot -->
+                <div class="absolute left-2.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-white"></div>
+
+                <!-- Event content -->
+                <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1">
+                      <p class="font-medium text-gray-900">{{ event.description }}</p>
+                      <p class="text-sm text-gray-500 mt-1">
+                        {{ formatDateTime(event.created_at) }}
+                      </p>
+                    </div>
+                    <span class="text-xs text-gray-400 whitespace-nowrap">
+                      {{ formatRelativeTime(event.created_at) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="text-center py-8 text-gray-500">
+            <ClipboardDocumentListIcon class="w-12 h-12 mx-auto mb-2 text-gray-300" />
+            <p>No ride events recorded yet.</p>
           </div>
         </div>
 
