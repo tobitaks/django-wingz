@@ -2,6 +2,19 @@
 
 A Django REST Framework backend for managing ride-sharing operations with performance-optimized APIs, featuring advanced filtering, GPS-based sorting, and comprehensive CRUD operations.
 
+## 🚀 Live Demo
+
+**Production URL**: https://django-wingz.fly.dev/
+
+**Test Credentials:**
+- Username: `admin`
+- Password: `admin123`
+
+**Quick Links:**
+- [Frontend](https://django-wingz.fly.dev/)
+- [API Root](https://django-wingz.fly.dev/api/)
+- [Admin Panel](https://django-wingz.fly.dev/admin/)
+
 ## Features
 
 ### Backend (Django REST Framework)
@@ -76,33 +89,48 @@ This will:
 5. Prompt to create a superuser
 6. Generate sample data (users, rides, events)
 
+
 ### Access the Backend
 
 - **API Root**: http://localhost:8000/api/
 - **Admin Panel**: http://localhost:8000/admin/
 - **API Rides Endpoint**: http://localhost:8000/api/rides/
 
-### Running Tests
+#### Using the Django Admin Panel
 
-After setup, you can run the comprehensive test suite:
+The Django admin provides a full-featured interface for managing all data:
 
-```bash
-# Run all 30 tests
-make test
+1. **Open your browser** and navigate to http://localhost:8000/admin/
+2. **Login** with your superuser credentials (created during `make init`)
+3. **Manage data**:
+   - **Users**: Create/edit riders, drivers, and admin users
+   - **Rides**: Create/edit rides with all fields
+   - **Ride Events**: Create/edit ride events
+   - **View relationships**: See linked riders, drivers, and events for each ride
+   - **Bulk actions**: Delete multiple records at once
+   - **Search & Filter**: Use the built-in search and filter options
 
-# Run specific test class
-make test ARGS="rides.tests.RideAPITest"
+#### Using the DRF Browsable API
 
-# Run specific test method
-make test ARGS="rides.tests.RideAPITest.test_create_ride"
+Django REST Framework provides a web-based interface for exploring and interacting with the API:
 
-# Run with verbose output
-make test ARGS="-v 2"
-```
+1. **Access the browsable API** in the same browser (make sure that you're already logged in as admin):
+   - **API Root**: http://localhost:8000/api/ - Shows all available endpoints
+   - **Rides**: http://localhost:8000/api/rides/ - List/Create rides
+   - **Ride Detail**: http://localhost:8000/api/rides/1/ - View/Update/Delete specific ride
+   - **Users**: http://localhost:8000/api/users/ - List users
+   - **Ride Events**: http://localhost:8000/api/ride-events/ - List events
 
-Expected output: `Ran 30 tests in X.XXXs - OK`
+2. **Perform operations**:
+   - **GET**: Click on any endpoint to view data
+   - **POST**: Use the form at the bottom of list views to create new records
+   - **PUT/PATCH**: Use the form on detail views to update records
+   - **DELETE**: Use the delete button on detail views
+   - **Filter**: Add query parameters like `?status=pickup` or `?rider_email=test@example.com`
+   - **Sort**: Add `?ordering=-pickup_time` to sort by pickup time (descending)
 
-See the [Testing](#testing) section below for detailed test coverage information.
+**Note:** Since the API uses session authentication, you must login through the admin panel first before accessing the browsable API.
+
 
 ## API Documentation
 
@@ -416,8 +444,19 @@ The application is deployed on Fly.io with integrated frontend and backend:
 
 - **Production URL**: https://django-wingz.fly.dev/
 
+**Login Credentials (for testing):**
+- **Username**: `admin`
+- **Email**: `admin@wingz.com`
+- **Password**: `admin123`
+
+**Access Points:**
+- **Frontend**: https://django-wingz.fly.dev/
+- **API Root**: https://django-wingz.fly.dev/api/
+- **Admin Panel**: https://django-wingz.fly.dev/admin/
+
 The production build includes:
 - Multi-stage Docker build (Vue.js build + Django)
 - WhiteNoise for static file serving
 - PostgreSQL database
 - Production-ready security settings
+- Sample data pre-loaded (21 users, 100 rides, 554 events)
