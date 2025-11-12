@@ -35,8 +35,9 @@ if settings.DEBUG:
 # Serve Vue.js frontend in production
 if not settings.DEBUG:
     # Serve index.html for all non-API routes (Vue Router support)
+    # Exclude: api, admin, static, assets (with or without trailing slash)
     urlpatterns += [
-        re_path(r'^(?!api/|admin/|static/).*$',
+        re_path(r'^(?!api|admin|static|assets).*$',
                 TemplateView.as_view(template_name='index.html'),
                 name='frontend'),
     ]

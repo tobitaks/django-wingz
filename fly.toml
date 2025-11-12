@@ -1,7 +1,7 @@
 # fly.toml app configuration file
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
-app = 'wingz-ride-management'
+app = 'django-wingz'
 primary_region = 'sjc'  # Change to your preferred region
 
 [build]
@@ -22,12 +22,13 @@ primary_region = 'sjc'  # Change to your preferred region
   min_machines_running = 1
   processes = ['app']
 
-[[http_service.checks]]
-  grace_period = "30s"
-  interval = "15s"
-  method = "GET"
-  timeout = "10s"
-  path = "/api/"
+# Health check disabled temporarily - API requires authentication
+# [[http_service.checks]]
+#   grace_period = "30s"
+#   interval = "15s"
+#   method = "GET"
+#   timeout = "10s"
+#   path = "/api/"
 
 [[vm]]
   size = 'shared-cpu-1x'

@@ -54,8 +54,8 @@ COPY --chown=django:django . /code/
 # Copy built frontend files from stage 1
 COPY --from=build-frontend --chown=django:django /frontend/dist /code/frontend/dist
 
-# Collect static files
-RUN python manage.py collectstatic --noinput --settings=config.settings_production
+# Collect static files (set dummy SECRET_KEY for build-time only)
+RUN SECRET_KEY=build-time-secret-key-not-used python manage.py collectstatic --noinput --settings=config.settings_production
 
 # Change ownership
 RUN chown -R django:django /code

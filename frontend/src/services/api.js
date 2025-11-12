@@ -69,7 +69,8 @@ api.interceptors.response.use(
       }
 
       // Return error message from server or generic message
-      return Promise.reject(data?.detail || data || 'An error occurred')
+      // Check for common error message formats: detail, error, message
+      return Promise.reject(data?.detail || data?.error || data?.message || data || 'An error occurred')
     } else if (error.request) {
       // Request made but no response received
       return Promise.reject('Network error - please check your connection')
