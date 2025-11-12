@@ -36,3 +36,5 @@ staticfiles/
 
 # Debug Toolbar
 .debug_toolbar/
+
+application-journey
